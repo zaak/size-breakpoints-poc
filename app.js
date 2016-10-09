@@ -31,7 +31,7 @@ const main = async( function*() {
 	console.log( chalk.cyan( 'Running simulation...' ) );
 
 	const table = new Table( {
-		head: [ 'Sample WxH', 'Sample FSize [B]', 'Predicted WxH', 'Real FSize [B]', 'FSize Accurateness [%]' ].map( v => chalk.cyan( v ) )
+		head: [ 'Sample WxH', 'Sample FSize [B]', 'Predicted WxH', 'Real FSize [B]', 'FSize Ratio [%]' ].map( v => chalk.cyan( v ) )
 	} );
 
 	// Emulate some requests for images with given file size
