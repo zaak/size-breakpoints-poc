@@ -51,7 +51,7 @@ const main = async( function*() {
 			testSampleFileSize,
 			`${width}x${height}`,
 			realFileSize,
-			realFileSize / testSampleFileSize * 100
+			chalk.bold( realFileSize / testSampleFileSize * 100 )
 		] );
 	}
 

@@ -31,7 +31,7 @@ class Predictor {
 
 				const lWidth = Math.ceil( multiplier * metadata.width );
 				const lHeight = Math.ceil( multiplier * metadata.height );
-				const lFileBuffer = yield that.getFileSizeByDimensions( lWidth, lHeight );
+				const lFileBuffer = yield that.resizeOriginalImage( lWidth, lHeight );
 
 				that.xs.push( lFileBuffer.length );
 				that.ys.push( lWidth * lHeight );
@@ -39,18 +39,18 @@ class Predictor {
 		} );
 	}
 
-	getFileSizeByDimensions( width, height ) {
+	resizeOriginalImage( width, height ) {
 		return sharp( this.imagePath ).resize( width, height ).toBuffer();
 	}
 
 	predict( targetSize, type = 'polynomial' ) {
-		const result = everpolate[ type ]( targetSize, this.xs, this.ys );
+		const numOfPixels = everpolate[ type ]( targetSize, this.xs, this.ys );
 
-		return this.calculateDimensions( result );
+		return this.calculateDimensions( numOfPixels );
 	}
 
-	calculateDimensions( dimMult ) {
-		const height = Math.ceil( Math.sqrt( Math.abs( dimMult ) / this.imageWHratio ) );
+	calculateDimensions( numOfPixels ) {
+		const height = Math.ceil( Math.sqrt( Math.abs( numOfPixels ) / this.imageWHratio ) );
 		const width = Math.ceil( height * this.imageWHratio );
 
 		return { width: width, height: height };
