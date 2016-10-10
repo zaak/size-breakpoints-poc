@@ -1,6 +1,9 @@
 const everpolate = require( 'everpolate' );
 const sharp = require( 'sharp' );
 const async = require( 'bluebird' ).coroutine;
+const imagemin = require( 'imagemin' );
+const imageminMozjpeg = require( 'imagemin-mozjpeg' );
+const imageminPngquant = require( 'imagemin-pngquant' );
 
 class Predictor {
 	/**
@@ -31,7 +34,13 @@ class Predictor {
 
 				const lWidth = Math.ceil( multiplier * metadata.width );
 				const lHeight = Math.ceil( multiplier * metadata.height );
-				const lFileBuffer = yield that.resizeOriginalImage( lWidth, lHeight );
+				const originalBuffer = yield that.resizeOriginalImage( lWidth, lHeight );
+				const lFileBuffer = yield imagemin.buffer( originalBuffer, {
+					plugins: [
+						imageminMozjpeg(),
+						imageminPngquant( { quality: '65-80' } )
+					]
+				} );
 
 				that.xs.push( lFileBuffer.length );
 				that.ys.push( lWidth * lHeight );

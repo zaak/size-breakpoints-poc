@@ -3,6 +3,9 @@ const chalk = require( 'chalk' );
 const Predictor = require( './predictor' );
 const sharp = require( 'sharp' );
 const Table = require( 'cli-table' );
+const imagemin = require( 'imagemin' );
+const imageminMozjpeg = require( 'imagemin-mozjpeg' );
+const imageminPngquant = require( 'imagemin-pngquant' );
 
 function usage() {
 	return console.log( 'node app.js [PATH TO IMAGE] (polynomial|linear)' );
@@ -43,7 +46,14 @@ const main = async( function*() {
 
 		const { width, height } = predictor.predict( testSampleFileSize, interpolationType );
 
-		const realFileSize = ( yield sharp( imagePath ).resize( width, height ).toBuffer() ).length;
+		const realFileBuffer = yield sharp( imagePath ).resize( width, height ).toBuffer();
+		const optimizedBuffer = yield imagemin.buffer( realFileBuffer, {
+			plugins: [
+				imageminMozjpeg(),
+				imageminPngquant( { quality: '65-80' } )
+			]
+		} );
+		const realFileSize = optimizedBuffer.length;
 
 		process.stdout.write( '.' );
 		table.push( [
